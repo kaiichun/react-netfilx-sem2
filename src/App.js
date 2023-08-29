@@ -17,6 +17,9 @@ function App() {
       <Space h="30px" />
       {/* list all the movies here */}
       <Movies />
+      <Space h="20px" />
+      <hr />
+      <Space h="10px" />
       <Tvshow />
     </Container>
   );
