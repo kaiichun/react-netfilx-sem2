@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Title,
@@ -7,40 +8,105 @@ import {
   Badge,
   Group,
   Space,
-  Divider,
   Button,
+  Divider,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 function Tvshow() {
+  const navigate = useNavigate();
   const [tvshow, setTvshow] = useState([]);
+  // method 2 need add this
+  const [tvshowAPI, setTvshowAPI] = useState([]);
+
   useEffect(() => {
     axios
       .get("http://localhost:8080/tvshows")
       .then((response) => {
         setTvshow(response.data);
+        // method 2 need add this
+        setTvshowAPI(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  const filterTvshow = async (genre = "") => {
+  // method 1
+  // const filterTvshow = async (genre = "") => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:8080/tvshows?genre=" + genre
+  //     );
+  //     setTvshow(response.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  //method 2
+  const filterTvshow = async (genre) => {
+    if (genre !== "") {
+      const newTvshow = tvshowAPI.filter((tv) => tv.genre.includes(genre));
+      setTvshow(newTvshow);
+    } else {
+      setTvshow(tvshowAPI);
+    }
+  };
+
+  const handleTvShowDelete = async (tvshow_id) => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/tvshows?genre=" + genre
-      );
-      setTvshow(response.data);
+      // trigger API to delete from database
+      await axios({
+        method: "DELETE",
+        url: "http://localhost:8080/tvshows/" + tvshow_id,
+      });
+      // method 1 (modify the state) - filter out the deleted movie
+      notifications.show({
+        title: "Movie Deleted",
+        color: "green",
+      });
+      // method 2 (recall the api for movies again)
+      // axios
+      //   .get("http://localhost:8080/movies/")
+      //   .then((response) => {
+      //     setMovies(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+      const newTvshow = tvshow.filter((t) => t._id !== tvshow_id);
+      setTvshow(newTvshow);
     } catch (error) {
-      console.log(error);
+      notifications.show({
+        title: error.response.data.message,
+        color: "red",
+      });
     }
   };
 
   return (
     <>
       <Space h="20px" />
-      <Title order={3} align="center">
-        TV Shows
-      </Title>
+      <Group position="apart">
+        <Title order={3} align="center">
+          TV Shows
+        </Title>
+        {/* Method 1
+         <Button component={Link} to="/movie_add" color="green">
+          Add New
+        </Button>  */}
+
+        {/* Method 2 */}
+        <Button
+          color="yellow"
+          onClick={() => {
+            navigate("/tvshow_add");
+          }}
+        >
+          Add New
+        </Button>
+      </Group>
       <Space h="20px" />
       <Group position="center">
         <Button
@@ -70,13 +136,6 @@ function Tvshow() {
           }}
         >
           Action
-        </Button>
-        <Button
-          onClick={() => {
-            filterTvshow("Crime");
-          }}
-        >
-          Crime
         </Button>
         <Button
           onClick={() => {
@@ -154,6 +213,28 @@ function Tvshow() {
                         </Badge>
                       ))}
                       <Badge>{tvshows.rating}</Badge>
+                    </Group>
+                    <Space h="20px" />
+                    <Group position="apart">
+                      <Button
+                        component={Link}
+                        to={"/tvshows/" + tvshows._id}
+                        color="blue"
+                        size="xs"
+                        radius="5px"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        color="red"
+                        size="xs"
+                        radius="5px"
+                        onClick={() => {
+                          handleTvShowDelete(tvshows._id);
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </Group>
                   </Card>
                 </Grid.Col>
