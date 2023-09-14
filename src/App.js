@@ -3,7 +3,7 @@ import Home from "./Home";
 import MovieAdd from "./MovieAdd";
 import MovieEdit from "./MovieEdit";
 import TvShowAdd from "./TvShowAdd";
-import TvShowEdit from "./TvShowEdit";
+import TvShowEdit from "./MovieEdit";
 
 function App() {
   return (

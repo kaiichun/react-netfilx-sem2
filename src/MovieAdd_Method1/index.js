@@ -13,62 +13,40 @@ import {
 } from "@mantine/core";
 import { Link, useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-
-const addMovie = async (data) => {
-  const response = await axios({
-    method: "POST",
-    url: "http://localhost:8080/movies",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: data,
-  });
-  return response.data;
-};
 
 function MovieAdd() {
   const navigate = useNavigate();
-  // const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [director, setDirector] = useState("");
   const [releaseYear, setReleaseYear] = useState("");
   const [genre, setGenre] = useState("");
   const [rating, setRating] = useState(1);
 
-  // create mutation
-  const createMutation = useMutation({
-    mutationFn: addMovie,
-    onSuccess: () => {
-      // when the movie is created
-      // show add success message
-      notifications.show({
-        title: "Movie Added",
-        color: "green",
+  const handleAddNewMovie = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios({
+        method: "POST",
+        url: "http://localhost:8080/movies",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({
+          title: title,
+          director: director,
+          release_year: releaseYear,
+          genre: genre,
+          rating: rating,
+        }),
       });
       // redirect back to home page
       navigate("/");
-    },
-    onError: (error) => {
-      // when this is an error in API call
+    } catch (error) {
       notifications.show({
         title: error.response.data.message,
         color: "red",
       });
-    },
-  });
-
-  const handleAddNewMovie = async (event) => {
-    event.preventDefault();
-    createMutation.mutate(
-      JSON.stringify({
-        title: title,
-        director: director,
-        release_year: releaseYear,
-        genre: genre,
-        rating: rating,
-      })
-    );
+    }
   };
 
   return (

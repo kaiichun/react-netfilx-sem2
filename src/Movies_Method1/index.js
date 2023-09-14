@@ -50,38 +50,38 @@ function Movies() {
   });
 
   // Method 1: extract genre from movies
-  // useEffect(() => {
-  //   // if genre is not empty, we are not going to update the options
-  //   if (genre === "") {
-  //     let options = [];
-  //     // loop through all the movies to get the genre from each movie
-  //     if (movies && movies.length > 0) {
-  //       movies.forEach((movie) => {
-  //         // to make sure the genre wasn't already in the options
-  //         if (!options.includes(movie.genre)) {
-  //           options.push(movie.genre);
-  //         }
-  //       });
-  //     }
-  //     setGenreOptions(options);
-  //   }
-  // }, [movies, genre]);
+  useEffect(() => {
+    // if genre is not empty, we are not going to update the options
+    if (genre === "") {
+      let options = [];
+      // loop through all the movies to get the genre from each movie
+      if (movies && movies.length > 0) {
+        movies.forEach((movie) => {
+          // to make sure the genre wasn't already in the options
+          if (!options.includes(movie.genre)) {
+            options.push(movie.genre);
+          }
+        });
+      }
+      setGenreOptions(options);
+    }
+  }, [movies, genre]);
 
   // Method 2: extract genre from movies using useMemo
-  const memoryMovies = queryClient.getQueryData(["movies", "", ""]);
-  const genreOptions = useMemo(() => {
-    let options = [];
-    // loop through all the movies to get the genre from each movie
-    if (memoryMovies && memoryMovies.length > 0) {
-      memoryMovies.forEach((movie) => {
-        // to make sure the genre wasn't already in the options
-        if (!options.includes(movie.genre)) {
-          options.push(movie.genre);
-        }
-      });
-    }
-    return options;
-  }, [memoryMovies]);
+  // const memoryMovies = queryClient.getQueryData(["movies", "", ""]);
+  // const genreOptions = useMemo(() => {
+  //   let options = [];
+  //   // loop through all the movies to get the genre from each movie
+  //   if (memoryMovies && memoryMovies.length > 0) {
+  //     memoryMovies.forEach((movie) => {
+  //       // to make sure the genre wasn't already in the options
+  //       if (!options.includes(movie.genre)) {
+  //         options.push(movie.genre);
+  //       }
+  //     });
+  //   }
+  //   return options;
+  // }, [memoryMovies]);
 
   // delete mutation
   const deleteMutation = useMutation({
